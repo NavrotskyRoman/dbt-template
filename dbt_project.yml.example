@@ -1,0 +1,72 @@
+# Шаблон dbt-проекта. После клонирования замените project_name на имя домена (например payments_nt).
+# Profile должен совпадать с именем в profiles.yml (или DBT_PROFILES_DIR).
+
+name: 'project_name'
+profile: 'project_name'
+config-version: 2
+model-paths: ["models"]
+
+models:
+  project_name:
+    staging:
+      +schema: staging
+    intermediate:
+      +schema: intermediate
+    marts:
+      # Поддомен/датасет marts: +schema: marts_<домен>
+      core:
+        +schema: marts_core
+    utils:
+      +schema: utils
+
+seeds:
+  project_name:
+    +schema: seeds
+
+vars:
+  # Список неактивных моделей, которые нужно удалить в BQ.
+  # Формат: ["schema.identifier", ...], где schema — имя датасета (staging, intermediate, marts_*, utils и т.д.).
+
+  # Режимы обслуживания пайплайна (см. .cursor/rules/dbt.md):
+  #   - "full"           — создать external-таблицы (по vars.external_tables) и выполнить дроп deprecated/датасетов
+  #   - "no_external"    — не пересоздавать external-таблицы, но дропать deprecated/датасеты
+  #   - "external_only"  — создать только указанные external-таблицы (по vars.external_tables), дропы как обычно
+  #   - "external_all"   — создать/обновить все external-таблицы (stage_external_sources без select) и выполнить дропы
+  #   - "no_drops"       — создать external-таблицы (по vars.external_tables), но не выполнять дропы
+  #   - "dev"            — не создавать external-таблицы и не выполнять дропы (локальная разработка)
+  # По умолчанию dev: локальный compile/run без BQ; в CI/Airflow передавать --vars '{"pipeline_mode": "full"}'
+  pipeline_mode: "dev"
+
+  external_tables:   # Список external-таблиц, которые нужно создать/обновить через create_external_tables() (используется в режимах full / external_only).
+    # Формат элементов:
+    #   - "source_name"                → все external-таблицы этого source
+    #   - "source_name.table_name"     → конкретная external-таблица
+    # Для stats_orders: source raw_domain, таблица stats_orders_external.
+    # - "raw.stats_orders_external"
+
+  deprecated_tables:
+    # - "staging.base_domain__stats_orders__external-typed"
+    # - "staging.stg_domain__stats_orders__typed-lts_uniq"
+    # - "staging.stg_domain__stats_orders__lts_uniq-prod_arr"
+    # - "staging.stg_domain__stats_orders__prod_arr-prod_orders"
+    # - "staging.stg_domain__stats_orders__prod_orders-name_norm"
+    # - "utils.util_domain__stats_orders__time_spine_daily"
+    # - "marts_domain.fct_products_orders"
+    # - "seeds.seed_domain__st_ord__product_name_mapping"
+    # - "no_schema.fct_products_orders" # Miss configuration schema
+
+  # Список датасетов (schema) в BigQuery, которые можно дропнуть через макрос drop_datasets.
+  # Формат: ["dataset_name", ...].
+  drop_datasets:
+   # - "no_schema"
+
+# Для разового удаления целого датасета (schema) используем макрос drop_dataset:
+#   dbt run-operation drop_dataset --args '{"dataset_name": "no_schema"}'
+
+on-run-start:
+  # Перед любым dbt run / dbt build запускаем универсальный pipeline-хук (см. macros/pipeline/pipeline_hooks.sql).
+  - "{{ pipeline_on_run_start() }}"
+
+on-run-end:
+  # После dbt run / dbt build запускаем завершающий pipeline-хук (см. macros/pipeline/pipeline_hooks.sql).
+  - "{{ pipeline_on_run_end() }}"

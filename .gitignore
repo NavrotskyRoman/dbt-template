@@ -1,0 +1,15 @@
+# dbt
+target/
+dbt_packages/
+logs/
+*.log
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+profiles.yml
+.env
+**/secret.json

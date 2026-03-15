@@ -1,0 +1,10 @@
+# Зависимости dbt (установка: dbt deps)
+# После клонирования репозитория замените GIT_URL_DBT_CORE на реальный URL репозитория dbt-core.
+
+packages:
+  # Общие макросы платформы (pipeline, generate_schema_name и т.д.)
+  - git: "https://github.com/NavrotskyRoman/dbt-core-dope"
+    revision: main
+  # External tables для BigQuery (нужен для pipeline_on_run_start при использовании raws)
+  - package: dbt-labs/dbt_external_tables
+    version: 0.12.0
