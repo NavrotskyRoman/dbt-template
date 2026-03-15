@@ -39,10 +39,19 @@
 
 4. **Настройте окружение (.env)**  
    - Скопируйте `.env.example` в `.env`.  
-   - Заполните переменные:
-     - `DBT_BIGQUERY_PROJECT`, `DBT_BIGQUERY_DATASET`, `DBT_BIGQUERY_LOCATION` и т.п. под ваш GCP‑проект.
-     - `DBT_ENV_SECRET_BIGQUERY_KEYFILE_JSON` — JSON содержимым service account (не коммитьте реальное значение в git).
-   - Локально можно использовать `direnv`, `source .env` или настройки IDE, в Docker/Airflow — передавать эти переменные через env/секреты.
+   - Заполните переменные под ваш GCP‑проект:
+     - **Подключение:** `DBT_BIGQUERY_PROJECT`, `DBT_BIGQUERY_DATASET`, `DBT_BIGQUERY_LOCATION`.
+     - **Ключ (только base64):** переменная `DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64` — значение должно быть **одной строкой base64** JSON ключа service account (без пробелов и переносов). Не коммитьте реальное значение в git.
+
+   **Как получить строку для `DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64`:**
+   - Запустите скрипт: `./scripts/configs/google_secret_to_base64.sh`
+   - По запросу укажите путь к файлу с ключом (например `~/keys/my-sa.json`) и нажмите Enter.
+   - Скрипт выведет одну строку вида `DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64=...` — скопируйте её (Ctrl+C) и вставьте в `.env` (Ctrl+V), заменив пустое значение.
+   - Либо передайте путь аргументом: `./scripts/configs/google_secret_to_base64.sh path/to/service-account.json`
+
+   Для prod при необходимости раскомментируйте в `.env.example` блок переменных с суффиксом `_PROD` и заполните их; в `profiles.yml` раскомментируйте таргет `prod`.
+
+   Локально: `direnv`, `source .env` или настройки IDE. В CI/Docker/Airflow — передавайте переменные через env; в Google Secret Manager можно хранить ту же строку base64 и подставлять её в `DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64` перед запуском dbt.
 
 5. **Создайте `profiles.yml` в корне проекта**  
    - Скопируйте `profiles.yml.example` в `profiles.yml`.  
