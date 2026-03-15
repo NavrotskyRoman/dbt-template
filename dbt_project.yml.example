@@ -1,5 +1,6 @@
 # Шаблон dbt-проекта. После клонирования замените project_name на имя домена (например payments_nt).
-# Profile должен совпадать с именем в profiles.yml (или DBT_PROFILES_DIR).
+# Profile должен совпадать с именем в profiles.yml. Переменные окружения — см. .env.example.
+# Ключ BigQuery — только base64: DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64 (см. scripts/configs/google_secret_to_base64.sh).
 
 name: 'project_name'
 profile: 'project_name'

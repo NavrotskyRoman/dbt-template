@@ -13,9 +13,8 @@ project_name:
       dataset: "{{ env_var('DBT_BIGQUERY_DATASET') }}"         # базовый датасет (например 'staging' или 'raws' для dev)
       location: "{{ env_var('DBT_BIGQUERY_LOCATION', 'US') }}" # регион (US / EU и т.п.)
 
-      # JSON содержимое service account (строка), передаётся через переменную окружения.
-      # Рекомендуется использовать префикс DBT_ENV_SECRET_, чтобы значение не логировалось.
-      keyfile_json: "{{ env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_JSON') }}"
+      # Содержимое ключа service account в формате base64 (одна строка). См. scripts/configs/google_secret_to_base64.sh
+      keyfile_json: "{{ env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64') }}"
 
       # Технические настройки (опционально)
       threads: "{{ env_var('DBT_BIGQUERY_THREADS', '4') | int }}"
@@ -30,7 +29,7 @@ project_name:
     #   project: "{{ env_var('DBT_BIGQUERY_PROJECT_PROD', env_var('DBT_BIGQUERY_PROJECT')) }}"
     #   dataset: "{{ env_var('DBT_BIGQUERY_DATASET_PROD') }}"
     #   location: "{{ env_var('DBT_BIGQUERY_LOCATION_PROD', env_var('DBT_BIGQUERY_LOCATION', 'US')) }}"
-    #   keyfile_json: "{{ env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_JSON_PROD', env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_JSON')) }}"
+    #   keyfile_json: "{{ env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64_PROD', env_var('DBT_ENV_SECRET_BIGQUERY_KEYFILE_BASE64')) }}"
     #   threads: "{{ env_var('DBT_BIGQUERY_THREADS_PROD', '8') | int }}"
     #   timeout_seconds: "{{ env_var('DBT_BIGQUERY_TIMEOUT_SECONDS_PROD', '600') | int }}"
     #   priority: "{{ env_var('DBT_BIGQUERY_PRIORITY_PROD', 'batch') }}"
