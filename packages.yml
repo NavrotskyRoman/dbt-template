@@ -3,7 +3,7 @@
 
 packages:
   # Общие макросы платформы (pipeline, generate_schema_name и т.д.)
-  - git: "https://github.com/NavrotskyRoman/dbt-core-dope"
+  - git: "https://github.com/NavrotskyRoman/dbt-core"
     revision: main
   # External tables для BigQuery (нужен для pipeline_on_run_start при использовании raws)
   - package: dbt-labs/dbt_external_tables
